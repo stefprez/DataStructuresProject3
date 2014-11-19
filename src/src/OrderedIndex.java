@@ -191,20 +191,10 @@ public class OrderedIndex {
 
 		else // List has at least two elements
 		{
-			/*
-			 * To Do List:
-			 * Root
-			 * Head
-			 * Tail
-			 * No Children (Head and Tail)
-			 * Left Child Only (Tail only)
-			 * Right Child Only (Head only)
-			 * Two Children (Neither)
-			 * 
-			 */
+			
 			IndexRecord recordToDelete = find(stringToDelete);
 			IndexRecord parentNode = null;
-			IndexRecord traversalNode = null;
+			IndexRecord rightTraversalNode = null;
 			if (recordToDelete == null)
 				return;
 
@@ -236,25 +226,96 @@ public class OrderedIndex {
 			}
 			else if (recordToDelete.hasTwoChildren())
 			{
-				//Unfinished!
-				System.out.println("recordToDelete has two children. Unfinished method!");
-			}
-			else if (recordToDelete.hasLeftChild())
-			{
-				traversalNode = recordToDelete.getLeftChild();
+				//Broken and sad :(
+				rightTraversalNode = recordToDelete.getRightChild();
+				IndexRecord inOrderSuccessor = rightTraversalNode;
+				IndexRecord leftTraversalNode = recordToDelete.getLeftChild();
+				
+				while(!rightTraversalNode.rightChildIsAThread())
+					rightTraversalNode = rightTraversalNode.getRightChild();
+				
+				while(!leftTraversalNode.leftChildIsAThread())
+					leftTraversalNode = leftTraversalNode.getLeftChild();
+				
+				//Find inOrderSuccessor
+				while (!inOrderSuccessor.leftChildIsAThread())
+					inOrderSuccessor = inOrderSuccessor.getLeftChild();
+				
 				boolean parentNodeFoundAndAltered = false;
 				while(!parentNodeFoundAndAltered)
 				{
 
-					if(traversalNode.leftChildIsAThread() && !traversalNode.getLeftChild().rightChildIsAThread() 
-							&& recordToDelete.equals(traversalNode.getLeftChild().getRightChild()))
+					if(leftTraversalNode.leftChildIsAThread() && !leftTraversalNode.getLeftChild().rightChildIsAThread() 
+							&& recordToDelete.equals(leftTraversalNode.getLeftChild().getRightChild()))
 					{
 						//recordToDelete is rightChild of parentNode
-						parentNode = traversalNode.getLeftChild();
+						parentNode = leftTraversalNode.getLeftChild();
+						parentNode.setRightChild(inOrderSuccessor);
+						inOrderSuccessor.setLeftChild(recordToDelete.getLeftChild()); //A
+						
+						//if statement on if children have children? check if threads, repoint threads
+						//as necessary...
+						recordToDelete.getLeftChild().setRightChildAsThread(inOrderSuccessor); //B
+						parentNodeFoundAndAltered = true;
+					}
+					else if (rightTraversalNode.rightChildIsAThread() && !rightTraversalNode.getRightChild().leftChildIsAThread() 
+							&& recordToDelete.equals(rightTraversalNode.getRightChild().getLeftChild()))
+					{
+						//recordToDelete is leftChild of parentNode
+						parentNode = rightTraversalNode.getRightChild();
+						parentNode.setLeftChild(inOrderSuccessor);
+						inOrderSuccessor.setLeftChild(recordToDelete.getLeftChild()); //A
+						
+						//if statement on if children have children? check if threads, repoint threads
+						//as necessary...
+						
+						if (recordToDelete.getLeftChild().hasRightChild())
+						{
+							IndexRecord leftSideNodeToUpdateThread = recordToDelete.getLeftChild().getRightChild();
+							
+							while(!leftSideNodeToUpdateThread.rightChildIsAThread())
+								leftSideNodeToUpdateThread = leftSideNodeToUpdateThread.getRightChild();
+							
+							leftSideNodeToUpdateThread.setRightChildAsThread(inOrderSuccessor);
+						}
+						if (recordToDelete.getRightChild().hasLeftChild())
+						{
+							IndexRecord rightSideNodeToUpdateThread = recordToDelete.getRightChild();
+							
+							while(!rightSideNodeToUpdateThread.leftChildIsAThread())
+								rightSideNodeToUpdateThread = rightSideNodeToUpdateThread.getLeftChild();
+							
+							rightSideNodeToUpdateThread.setLeftChildAsThread(inOrderSuccessor);
+						}
+						
+						recordToDelete.getLeftChild().setRightChildAsThread(inOrderSuccessor); //B
+						parentNodeFoundAndAltered = true;
+
+					}
+					else
+					{
+						System.err.println("Shouldn't get here! OrderedIndex delete hasTwoChildren case");
+					}
+				}
+				
+			}
+			else if (recordToDelete.hasLeftChild())
+			{
+				rightTraversalNode = recordToDelete.getLeftChild();
+				boolean parentNodeFoundAndAltered = false;
+				while(!parentNodeFoundAndAltered)
+				{
+
+					if(rightTraversalNode.leftChildIsAThread() && !rightTraversalNode.getLeftChild().rightChildIsAThread() 
+							&& recordToDelete.equals(rightTraversalNode.getLeftChild().getRightChild()))
+					{
+						//recordToDelete is rightChild of parentNode
+						parentNode = rightTraversalNode.getLeftChild();
 						parentNode.setRightChild(recordToDelete.getLeftChild());
 						parentNodeFoundAndAltered = true;
 					}
-					else if (traversalNode.rightChildIsAThread() && recordToDelete.equals(traversalNode.getRightChild().getRightChild().getLeftChild()))
+					else if (rightTraversalNode.rightChildIsAThread() && 
+							recordToDelete.equals(rightTraversalNode.getRightChild().getRightChild().getLeftChild()))
 					{
 						//recordToDelete is leftChild of parentNode
 						parentNode = recordToDelete.getRightChild();
@@ -264,7 +325,7 @@ public class OrderedIndex {
 					}
 					else
 					{
-						traversalNode = traversalNode.getLeftChild();
+						rightTraversalNode = rightTraversalNode.getLeftChild();
 					}
 				}
 				
@@ -278,20 +339,20 @@ public class OrderedIndex {
 			}
 			else if (recordToDelete.hasRightChild())
 			{
-				traversalNode = recordToDelete.getRightChild();
+				rightTraversalNode = recordToDelete.getRightChild();
 				boolean parentNodeFoundAndAltered = false;
 				while(!parentNodeFoundAndAltered)
 				{
 
-					if(traversalNode.rightChildIsAThread() && !traversalNode.getRightChild().leftChildIsAThread() 
-							&& recordToDelete.equals(traversalNode.getRightChild().getLeftChild()))
+					if(rightTraversalNode.rightChildIsAThread() && !rightTraversalNode.getRightChild().leftChildIsAThread() 
+							&& recordToDelete.equals(rightTraversalNode.getRightChild().getLeftChild()))
 					{
 						//recordToDelete is leftChild of parentNode
-						parentNode = traversalNode.getRightChild();
+						parentNode = rightTraversalNode.getRightChild();
 						parentNode.setLeftChild(recordToDelete.getRightChild());
 						parentNodeFoundAndAltered = true;
 					}
-					else if (traversalNode.leftChildIsAThread() && !recordToDelete.getLeftChild().rightChildIsAThread() 
+					else if (rightTraversalNode.leftChildIsAThread() && !recordToDelete.getLeftChild().rightChildIsAThread() 
 							&& recordToDelete.equals(recordToDelete.getLeftChild().getRightChild()))
 					{
 						//recordToDelete is rightChild of parentNode
@@ -302,17 +363,17 @@ public class OrderedIndex {
 					}
 					else
 					{
-						traversalNode = traversalNode.getRightChild();
+						rightTraversalNode = rightTraversalNode.getRightChild();
 					}
 				}
 				
 				if (recordToDelete.isTheHeadOfTheTree())
 				{
 					head = recordToDelete.getRightChild();
-					traversalNode.setLeftChildAsThread(traversalNode);
+					rightTraversalNode.setLeftChildAsThread(rightTraversalNode);
 				}
 				else
-					traversalNode.setLeftChildAsThread(parentNode);
+					rightTraversalNode.setLeftChildAsThread(parentNode);
 
 			}
 		}
