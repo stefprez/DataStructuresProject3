@@ -1,31 +1,26 @@
-	Dunn Sean  	        31111
- 	Duong Geoffrey  	29922
- 	Fazekas Nicholas  	31100
- 	Prezioso Stefano 	 22223
- 	Puvvada Mohana 	     11224
- 	Ravikumar Rakhi 	  11226
- 	Salyers Matthew      11227 	
- 	Gillespie William  	49587
- 	Hess Caleb           29282  
- 	Armatis Jared   34512 	
- 	Beckman Allan  	35176
- 	Wang Zhen 	        22113
- 	Wingett Jordan  	12345
- 	Belt Keith  	34987
- 	Bixler Tyler 	22234
- 	Chambers Quentin  	22567
- 	Chinni Adithya 	    28456
- 	Donheiser Michael  	28456
- 	Kondrashov Mikhail   33331
- 	Kraus Laura          33332
- 	Krupp Phillip        49888
- 	Maass John           44112
- 	McCarty Amanda       44223
- 	Moldovan Gregory     44335
- 	Oshiyoye Adekunle   44556	
- 	Pagalos Frank  	     33112
- 	Perski Zackery       33221 
- 	Saunders Jordan       77556 	
- 	Simpson Ashlynne     77665 	
- 	Szalai Kyle  	    33112 
- 	Witting Robert  	21354 	
+q m	25
+w n	26
+e b	24
+r v	23
+t c	21
+y x	22
+u z	20
+i l	19
+o k	17
+p j	18
+a h	14
+s g	15
+d f	16
+f d	13
+g s	12
+h a	11
+j p	10
+k o	9
+l i	8
+z u	7
+x y	4
+c t	5
+v r	6
+b e	3
+n w	2
+m q	1

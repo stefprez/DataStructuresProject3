@@ -176,13 +176,13 @@ public class OrderedIndex {
 	 * @param databaseIndexToDelete
 	 *            Unique database index to search for and delete
 	 */
-	public void deleteRecord(int databaseIndexToDelete) {
+	public void deleteRecord(String stringToDelete) {
 		// Empty List
 		if (numberOfRecords == 0);
 
 		// One Record
 		else if (numberOfRecords == 1) {
-			if (root.getDatabaseIndex() == databaseIndexToDelete) {
+			if (root.getData().equals(stringToDelete)) {
 				head = null;
 				tail = null;
 				root = null;
@@ -191,7 +191,130 @@ public class OrderedIndex {
 
 		else // List has at least two elements
 		{
-			//Unfinished!
+			/*
+			 * To Do List:
+			 * Root
+			 * Head
+			 * Tail
+			 * No Children (Head and Tail)
+			 * Left Child Only (Tail only)
+			 * Right Child Only (Head only)
+			 * Two Children (Neither)
+			 * 
+			 */
+			IndexRecord recordToDelete = find(stringToDelete);
+			IndexRecord parentNode = null;
+			IndexRecord traversalNode = null;
+			if (recordToDelete == null)
+				return;
+
+			if (recordToDelete.hasNoChildren())
+			{
+				if(!recordToDelete.getLeftChild().rightChildIsAThread() && 
+						recordToDelete.equals(recordToDelete.getLeftChild().getRightChild()))
+				{
+					//recordToDelete is rightChild of parentNode
+					parentNode = recordToDelete.getLeftChild();
+					parentNode.setRightChildAsThread(parentNode);
+				}
+				else if (!recordToDelete.getRightChild().leftChildIsAThread() && 
+						recordToDelete.equals(recordToDelete.getRightChild().getLeftChild()))
+				{
+					//recordToDelete is leftChild of parentNode
+					parentNode = recordToDelete.getRightChild();
+					parentNode.setLeftChildAsThread(parentNode);
+				}
+				else
+				{
+					System.err.println("Unreachable code in OrderedIndex delete() for hasNoChildren");
+				}
+				
+				if (recordToDelete.isTheHeadOfTheTree())
+					head = parentNode; 
+				if (recordToDelete.isTheTailOfTheTree())
+					tail = parentNode;
+			}
+			else if (recordToDelete.hasTwoChildren())
+			{
+				//Unfinished!
+				System.out.println("recordToDelete has two children. Unfinished method!");
+			}
+			else if (recordToDelete.hasLeftChild())
+			{
+				traversalNode = recordToDelete.getLeftChild();
+				boolean parentNodeFoundAndAltered = false;
+				while(!parentNodeFoundAndAltered)
+				{
+
+					if(traversalNode.leftChildIsAThread() && !traversalNode.getLeftChild().rightChildIsAThread() 
+							&& recordToDelete.equals(traversalNode.getLeftChild().getRightChild()))
+					{
+						//recordToDelete is rightChild of parentNode
+						parentNode = traversalNode.getLeftChild();
+						parentNode.setRightChild(recordToDelete.getLeftChild());
+						parentNodeFoundAndAltered = true;
+					}
+					else if (traversalNode.rightChildIsAThread() && recordToDelete.equals(traversalNode.getRightChild().getRightChild().getLeftChild()))
+					{
+						//recordToDelete is leftChild of parentNode
+						parentNode = recordToDelete.getRightChild();
+						parentNode.setLeftChild(recordToDelete.getLeftChild());
+						parentNodeFoundAndAltered = true;
+
+					}
+					else
+					{
+						traversalNode = traversalNode.getLeftChild();
+					}
+				}
+				
+				if (recordToDelete.isTheTailOfTheTree())
+				{
+					tail = recordToDelete.getLeftChild();
+					recordToDelete.getLeftChild().setRightChildAsThread(recordToDelete.getLeftChild());
+				}
+				else
+					recordToDelete.getLeftChild().setRightChildAsThread(recordToDelete.getRightChild());
+			}
+			else if (recordToDelete.hasRightChild())
+			{
+				traversalNode = recordToDelete.getRightChild();
+				boolean parentNodeFoundAndAltered = false;
+				while(!parentNodeFoundAndAltered)
+				{
+
+					if(traversalNode.rightChildIsAThread() && !traversalNode.getRightChild().leftChildIsAThread() 
+							&& recordToDelete.equals(traversalNode.getRightChild().getLeftChild()))
+					{
+						//recordToDelete is leftChild of parentNode
+						parentNode = traversalNode.getRightChild();
+						parentNode.setLeftChild(recordToDelete.getRightChild());
+						parentNodeFoundAndAltered = true;
+					}
+					else if (traversalNode.leftChildIsAThread() && !recordToDelete.getLeftChild().rightChildIsAThread() 
+							&& recordToDelete.equals(recordToDelete.getLeftChild().getRightChild()))
+					{
+						//recordToDelete is rightChild of parentNode
+						parentNode = recordToDelete.getLeftChild();
+						parentNode.setRightChild(recordToDelete.getRightChild());
+						parentNodeFoundAndAltered = true;
+
+					}
+					else
+					{
+						traversalNode = traversalNode.getRightChild();
+					}
+				}
+				
+				if (recordToDelete.isTheHeadOfTheTree())
+				{
+					head = recordToDelete.getRightChild();
+					traversalNode.setLeftChildAsThread(traversalNode);
+				}
+				else
+					traversalNode.setLeftChildAsThread(parentNode);
+
+			}
 		}
 		numberOfRecords--;
 	}

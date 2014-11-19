@@ -27,7 +27,7 @@ public class DataStructure {
 	public DataStructure() {
 		this(200);
 	}
-	
+
 	DataStructureRecord[] getDatabase()
 	{
 		return database;
@@ -63,28 +63,33 @@ public class DataStructure {
 	 * @param idToDelete
 	 *            ID to be deleted. Should be numeric, positive, and no more
 	 *            than 9 digits long
-	 * @return Index of deleted record or -1 if not found
+	 * @return Deleted IndexRecord or null if not found
 	 */
 	public int deleteRecord(String idToDelete) {
 		// Format ID properly
 		idToDelete = verifyAndFormatID(idToDelete);
-
-		int indexOfIDToDelete = this.find(idToDelete);
-		boolean foundID = (indexOfIDToDelete >= 0);
-
-		if (foundID) {
+		int indexOfDatabaseRecordToDelete;
+		
+		try{
+			indexOfDatabaseRecordToDelete = IDIndex.find(idToDelete).getDatabaseIndex();
+			
 			// Add index to deletedIndex stack
-			deletedIndex.addIndex(indexOfIDToDelete);
-
+			deletedIndex.addIndex(indexOfDatabaseRecordToDelete);
+			
 			// Remove from OrderedIndexes
-			firstNameIndex.deleteRecord(indexOfIDToDelete);
-			lastNameIndex.deleteRecord(indexOfIDToDelete);
-			IDIndex.deleteRecord(indexOfIDToDelete);
+			DataStructureRecord databaseRecordToDelete = database[indexOfDatabaseRecordToDelete];
+			
+			firstNameIndex.deleteRecord(databaseRecordToDelete.getFirstName());
+			lastNameIndex.deleteRecord(databaseRecordToDelete.getLastName());
+			IDIndex.deleteRecord(databaseRecordToDelete.getID());
 
 			numberOfRecords--;
 		}
-
-		return indexOfIDToDelete;
+		catch (Exception e)
+		{
+			indexOfDatabaseRecordToDelete = -1;
+		}
+		return indexOfDatabaseRecordToDelete;
 	}
 
 	/**
@@ -167,9 +172,9 @@ public class DataStructure {
 			return -1;
 
 		idToFind = verifyAndFormatID(idToFind);
-		
+
 		IndexRecord targetIndexRecord = IDIndex.find(idToFind);
-		
+
 		if (targetIndexRecord == null)
 		{
 			return -1;

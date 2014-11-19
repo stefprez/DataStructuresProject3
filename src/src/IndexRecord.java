@@ -14,15 +14,15 @@ package src;
 
 public class IndexRecord implements Comparable<IndexRecord> {
 	private IndexRecord rightChild, leftChild;
-	private boolean rightChildIsThread, leftChildIsThread;
+	private boolean rightChildIsAThread, leftChildIsAThread;
 	private String data;
 	private int databaseIndex;
 
 	public IndexRecord(String data, int databaseIndex) {
 		rightChild = this;
 		leftChild = this;
-		rightChildIsThread = true;
-		leftChildIsThread = true;
+		rightChildIsAThread = true;
+		leftChildIsAThread = true;
 		this.data = data.toLowerCase();
 		this.databaseIndex = databaseIndex;
 	}
@@ -45,44 +45,64 @@ public class IndexRecord implements Comparable<IndexRecord> {
 	
 	public boolean rightChildIsAThread()
 	{
-		return rightChildIsThread;
+		return rightChildIsAThread;
 	}
 	
 	public boolean leftChildIsAThread()
 	{
-		return leftChildIsThread;
+		return leftChildIsAThread;
 	}
 	
 	public void setRightChildAsThread(IndexRecord threadToSet)
 	{
 		rightChild = threadToSet;
-		rightChildIsThread = true;
+		rightChildIsAThread = true;
 	}
 	
 	public void setLeftChildAsThread(IndexRecord threadToSet)
 	{
 		leftChild = threadToSet;
-		leftChildIsThread = true;
+		leftChildIsAThread = true;
 	}
 
 	public void setRightChild(IndexRecord recordToSet) {
 		rightChild = recordToSet;
-		rightChildIsThread = false;
+		rightChildIsAThread = false;
 	}
 
 	public void setLeftChild(IndexRecord recordToSet) {
 		leftChild = recordToSet;
-		leftChildIsThread = false;
+		leftChildIsAThread = false;
 	}
 
 	public boolean isTheTailOfTheTree() {
-		return (rightChild.equals(this) && rightChildIsThread );
+		return (rightChild.equals(this) && rightChildIsAThread );
 	}
 
 	public boolean isTheHeadOfTheTree() {
-		return (leftChild.equals(this) && leftChildIsThread);
+		return (leftChild.equals(this) && leftChildIsAThread);
 	}
 
+	public boolean hasLeftChild()
+	{
+		return (!leftChildIsAThread);
+	}
+	
+	public boolean hasRightChild()
+	{
+		return (!rightChildIsAThread);
+	}
+	
+	public boolean hasTwoChildren()
+	{
+		return (hasLeftChild() && hasRightChild());
+	}
+	
+	public boolean hasNoChildren()
+	{
+		return (!hasLeftChild() && !hasRightChild());
+	}
+	
 	public int compareTo(IndexRecord recordToCompare) {
 		return this.data.compareTo(recordToCompare.getData());
 	}
